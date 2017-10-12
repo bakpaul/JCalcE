@@ -8,22 +8,19 @@ public class Jcalc {
 				JOptionPane.WARNING_MESSAGE);
 		System.out.println(parenthesisCheck(s));
 	}
-	
+
 	public static Boolean parenthesisCheck(String s) {
 		int n = 0;
-		for(int i = 0; i < s.length(); i++) {
-			if(s.charAt(i) == '(')
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) == '(')
 				n += 1;
-			if(s.charAt(i) == ')')
+			if (s.charAt(i) == ')')
 				n -= 1;
-			if(n < 0) {
+			if (n < 0) {
 				return false;
 			}
 		}
-		if(n == 0)
-			return true;
-		else
-			return false;
+		return n == 0 ? true : false;
 	}
 
 }
