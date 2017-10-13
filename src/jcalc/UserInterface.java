@@ -1,19 +1,16 @@
+package jcalc;
+
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
 
-public class MyFrame extends JFrame implements ActionListener {
-	JButton calcButton0, calcButton1, calcButton2, calcButton3, calcButton4,
-			calcButton5, calcButton6, calcButton7, calcButton8, calcButton9;
+public class UserInterface extends JFrame implements ActionListener {
 	JButton calcButtonC, calcButtondelete;
-	JButton calcButtonplus, calcButtonmoins;
-	JButton calcButtonp1, calcButtonp2;
-	JButton calcButtonequals;
 	Container cont;
 	String expression = "";
 	TextArea t, tt;
 
-	public MyFrame() {
+	public UserInterface() {
 		setTitle("Calculatrice");
 		setResizable(false);
 
