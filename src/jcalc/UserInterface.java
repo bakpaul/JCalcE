@@ -5,7 +5,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UserInterface extends JFrame implements ActionListener {
-	JButton calcButtonC, calcButtondelete;
 	Container cont;
 	String expression = "";
 	TextArea t, tt;
@@ -19,12 +18,12 @@ public class UserInterface extends JFrame implements ActionListener {
 
 		t = new TextArea(expression, 5, 50, TextArea.SCROLLBARS_NONE);
 		t.setEditable(false);
-		t.setFont(new Font("Consolas", Font.BOLD, 20));
+		t.setFont(new Font("Consolas", Font.BOLD, 15));
 		add(t);
 
 		tt = new TextArea(expression, 5, 50, TextArea.SCROLLBARS_NONE);
 		tt.setEditable(false);
-		tt.setFont(new Font("Consolas", Font.BOLD, 20));
+		tt.setFont(new Font("Consolas", Font.BOLD, 15));
 		add(tt);
 
 		String touches[] = { "C", "←", "1", "2", "3", "+", "4", "5", "6", "-",
@@ -36,7 +35,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			b.setFont(new Font("Consolas", Font.BOLD, 30));
 		}
 
-		setSize(900, 400);
+		setSize(900, 300);
 		setVisible(true);
 	}
 
@@ -54,7 +53,8 @@ public class UserInterface extends JFrame implements ActionListener {
 	}
 
 	public double applyOperation(double a, double b, char operation) {
-		System.out.println("J'applique l'opération " + a + operation + b);
+		System.out.println("J'applique l'opération " + a + " " + operation
+				+ " " + b);
 		if (operation == '+')
 			return a + b;
 		else if (operation == '-')
@@ -68,47 +68,49 @@ public class UserInterface extends JFrame implements ActionListener {
 	}
 
 	public double evaluateExpression(String expression) {
-		System.out.println("Evaluation de l'expression : " + expression);
+		System.out.println("");
+		double a = 0;
+		int j = 0, k = 0, l = 0;
 
-		double a = 0, b = 0;
-		int l = 0;
-		char operation = ' ';
-
-		boolean priorite = false;
-
-		for (int i = 0; i < expression.length(); i++) {
-			if ("+-*/".indexOf(expression.charAt(i)) != -1) {
-				if (priorite == true) {
-					if (operation == ' ')
-						a = Double.parseDouble(expression.substring(l, i));
-					else
-						b = Double.parseDouble(expression.substring(l, i));
-
-					l = i + 1;
-
-					if (operation == '*' || operation == '/') {
-						a = applyOperation(a, b, operation);
-						b = 0;
-						expression = expression.substring(0, l);
-					}
-					operation = expression.charAt(i);
-				} else {
-					if (operation == ' ')
-						a = Double.parseDouble(expression.substring(l, i));
-					else
-						b = Double.parseDouble(expression.substring(l, i));
-
-					l = i + 1;
-
-					if (operation != ' ') {
-						a = applyOperation(a, b, operation);
-						b = 0;
-					}
-					operation = expression.charAt(i);
-				}
-			}
+		while (expression.indexOf('*') != -1 || expression.indexOf('/') != -1) {
+			k = Math.min(expression.indexOf('*'), expression.indexOf('/'));
+			if (k < 0)
+				k = Math.max(expression.indexOf('*'), expression.indexOf('/'));
+			j = k - 1;
+			l = k + 1;
+			while (j > 0 && "+-/*".indexOf(expression.charAt(j - 1)) == -1)
+				j--;
+			while (l < expression.length() - 1
+					&& "+-/*".indexOf(expression.charAt(l + 1)) == -1)
+				l++;
+			a = applyOperation(Double.parseDouble(expression.substring(j, k)),
+					Double.parseDouble(expression.substring(k + 1, l + 1)),
+					expression.charAt(k));
+			expression = expression.substring(0, j) + a
+					+ expression.substring(l + 1);
+			System.out.println("L'expression evolue en : " + expression);
 		}
-		b = Double.parseDouble(expression.substring(l));
-		return applyOperation(a, b, operation);
+
+		while (expression.indexOf('+') != -1 || expression.indexOf('-') != -1) {
+			k = Math.min(expression.indexOf('+'), expression.indexOf('-'));
+			if (k < 0)
+				k = Math.max(expression.indexOf('+'), expression.indexOf('-'));
+			if (k == 0)
+				break;
+			j = k - 1;
+			l = k + 1;
+			while (j > 0 && "+-/*".indexOf(expression.charAt(j - 1)) == -1)
+				j--;
+			while (l < expression.length() - 1
+					&& "+-/*".indexOf(expression.charAt(l + 1)) == -1)
+				l++;
+			a = applyOperation(Double.parseDouble(expression.substring(j, k)),
+					Double.parseDouble(expression.substring(k + 1, l + 1)),
+					expression.charAt(k));
+			expression = expression.substring(0, j) + a
+					+ expression.substring(l + 1);
+			System.out.println("L'expression evolue en : " + expression);
+		}
+		return Double.parseDouble(expression);
 	}
 }
