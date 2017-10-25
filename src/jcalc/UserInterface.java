@@ -14,49 +14,37 @@ public class UserInterface extends JFrame implements ActionListener {
 		setTitle("Calculatrice");
 		setResizable(false);
 
-		setLayout(new GridLayout(6, 3));
+		setLayout(new GridLayout(5, 3));
 		cont = getContentPane();
-
-		calcButtonC = new JButton("C");
-		calcButtonC.addActionListener(this);
-		add(calcButtonC);
 
 		t = new TextArea(expression, 5, 50, TextArea.SCROLLBARS_NONE);
 		t.setEditable(false);
+		t.setFont(new Font("Consolas", Font.BOLD, 20));
 		add(t);
 
 		tt = new TextArea(expression, 5, 50, TextArea.SCROLLBARS_NONE);
 		tt.setEditable(false);
+		tt.setFont(new Font("Consolas", Font.BOLD, 20));
 		add(tt);
 
-		for (int i = 0; i < 10; i++) {
-			JButton b = new JButton(i + "");
+		String touches[] = { "C", "←", "1", "2", "3", "+", "4", "5", "6", "-",
+				"7", "8", "9", "*", ".", "0", "=", "/" };
+		for (int i = 0; i < touches.length; i++) {
+			JButton b = new JButton(touches[i]);
 			b.addActionListener(this);
 			add(b);
-		}
-		
-		String operateurs[] = {"+", "-", "*", "/", "=", "."};
-		for (int i = 0; i < operateurs.length; i++) {
-			JButton b = new JButton(operateurs[i]);
-			b.addActionListener(this);
-			add(b);
-		}
-		
-		String parentheses[] = {"(", ")"};
-		for (int i = 0; i < parentheses.length; i++) {
-			JButton b = new JButton(parentheses[i]);
-			b.addActionListener(this);
-			add(b);
+			b.setFont(new Font("Consolas", Font.BOLD, 30));
 		}
 
-
-		setSize(600, 600);
+		setSize(900, 400);
 		setVisible(true);
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == calcButtonC)
+		if (e.getActionCommand() == "C")
 			expression = "";
+		else if (e.getActionCommand() == "←")
+			expression = expression.substring(0, expression.length() - 1);
 		else if (e.getActionCommand() == "=")
 			tt.setText(String.valueOf(evaluateExpression(expression)));
 		else
@@ -66,42 +54,61 @@ public class UserInterface extends JFrame implements ActionListener {
 	}
 
 	public double applyOperation(double a, double b, char operation) {
+		System.out.println("J'applique l'opération " + a + operation + b);
 		if (operation == '+')
 			return a + b;
 		else if (operation == '-')
 			return a - b;
+		else if (operation == '*')
+			return a * b;
+		else if (operation == '/')
+			return a / b;
 		else
 			return 0;
 	}
 
 	public double evaluateExpression(String expression) {
+		System.out.println("Evaluation de l'expression : " + expression);
+
 		double a = 0, b = 0;
 		int l = 0;
 		char operation = ' ';
+
+		boolean priorite = false;
+
 		for (int i = 0; i < expression.length(); i++) {
-			if (expression.charAt(i) != '+' && expression.charAt(i) != '-'
-					&& expression.charAt(i) != '('
-					&& expression.charAt(i) != ')') {
-			} else {
-				System.out.println(l);
-				if (operation == ' ')
-					a = Double.parseDouble(expression.substring(l, i));
-				else
-					b = Double.parseDouble(expression.substring(l, i));
-				
-				System.out.print(a + " " + b);
-				
-				l = i + 1;
-				
-				if (operation != ' ') {
-					a = applyOperation(a, b, operation);
-					b = 0;
+			if ("+-*/".indexOf(expression.charAt(i)) != -1) {
+				if (priorite == true) {
+					if (operation == ' ')
+						a = Double.parseDouble(expression.substring(l, i));
+					else
+						b = Double.parseDouble(expression.substring(l, i));
+
+					l = i + 1;
+
+					if (operation == '*' || operation == '/') {
+						a = applyOperation(a, b, operation);
+						b = 0;
+						expression = expression.substring(0, l);
+					}
+					operation = expression.charAt(i);
+				} else {
+					if (operation == ' ')
+						a = Double.parseDouble(expression.substring(l, i));
+					else
+						b = Double.parseDouble(expression.substring(l, i));
+
+					l = i + 1;
+
+					if (operation != ' ') {
+						a = applyOperation(a, b, operation);
+						b = 0;
+					}
+					operation = expression.charAt(i);
 				}
-				operation = expression.charAt(i);
 			}
 		}
 		b = Double.parseDouble(expression.substring(l));
-		System.out.println(applyOperation(a, b, operation));
 		return applyOperation(a, b, operation);
 	}
 }
